@@ -48,14 +48,20 @@
             var eb = new EventBus("http://localhost:8080/eventbus");
             eb.onopen = function() {
               eb.registerHandler("metrics", function(err, res) {
-                var x = (new Date()).getTime(); // current time
-                var sent = res.body["messages.sent"];
-                if (sent != null) {
-                  sentSeries.addPoint([x, sent.oneSecondRate], false, true);
-                  // Add the value to the `value` placeholder (ease testing)
-                  $("#value").html(sent.oneSecondRate);
+                if (err == null) {
+                  var x = (new Date()).getTime(); // current time
+                  var sent = res.body["messages.sent"];
+                  if (sent != null) {
+                    sentSeries.addPoint([x, sent.oneSecondRate], false, true);
+                    // Add the value to the `value` placeholder (ease testing)
+                    $("#value").html(sent.oneSecondRate);
+                  }
+                  that.redraw();
+                } else {
+                  console.log("EventBus registration error failureCode=" + err.failureCode +
+                              " failureType=" + err.failureType +
+                              " message=" + err.message);
                 }
-                that.redraw();
               });
             };
           }
